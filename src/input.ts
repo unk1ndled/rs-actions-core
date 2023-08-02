@@ -9,45 +9,45 @@ import * as core from '@actions/core';
  * and if it does not exist, trying the `INPUT_NO-DEFAULT-FEATURES`.
  **/
 export function getInput(name: string, options?: core.InputOptions): string {
-    const inputFullName = name.replace(/-/g, '_');
-    const value = core.getInput(inputFullName, options);
-    if (value.length > 0) {
-        return value;
-    }
+  const inputFullName = name.replace(/-/g, '_');
+  const value = core.getInput(inputFullName, options);
+  if (value.length > 0) {
+    return value;
+  }
 
-    return core.getInput(name, options);
+  return core.getInput(name, options);
 }
 
 export function getInputBool(
-    name: string,
-    options?: core.InputOptions,
+  name: string,
+  options?: core.InputOptions,
 ): boolean {
-    const value = getInput(name, options);
-    if (value && (value === 'true' || value === '1')) {
-        return true;
-    } else {
-        return false;
-    }
+  const value = getInput(name, options);
+  if (value && (value === 'true' || value === '1')) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 export function getInputList(
-    name: string,
-    options?: core.InputOptions,
+  name: string,
+  options?: core.InputOptions,
 ): string[] {
-    const raw = getInput(name, options);
+  const raw = getInput(name, options);
 
-    return raw
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter((item: string) => item.length > 0);
+  return raw
+    .split(',')
+    .map((item: string) => item.trim())
+    .filter((item: string) => item.length > 0);
 }
 
 export function getInputAsArray(
-    name: string,
-    options?: core.InputOptions,
+  name: string,
+  options?: core.InputOptions,
 ): string[] {
-    return getInput(name, options)
-        .split('\n')
-        .map((s) => s.trim())
-        .filter((x) => x !== '');
+  return getInput(name, options)
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((x) => x !== '');
 }
