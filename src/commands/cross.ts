@@ -33,8 +33,7 @@ export class Cross {
     // Somewhat new Rust is required to compile `cross`
     // (TODO: Not sure what version exactly, should clarify)
     // but if some action will set an override toolchain before this action called
-    // (ex. `@actions-rs/toolchain` with `toolchain: 1.31.0`)
-    // `cross` compilation will fail.
+    // (ex. `dtolnay/rust-toolchain@1.31.0`) `cross` compilation will fail.
     //
     // In order to skip this problem and install `cross` globally
     // using the pre-installed system Rust,

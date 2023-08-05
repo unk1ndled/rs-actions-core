@@ -8,7 +8,7 @@ import * as path from 'path';
 export async function resolveVersion(crate: string): Promise<string> {
   const url = `https://crates.io/api/v1/crates/${crate}`;
   const client = new http.HttpClient(
-    '@actions-rs (https://github.com/actions-rs/)',
+    '@clechasseur/rs-actions-core (https://github.com/clechasseur/rs-actions-core)',
   );
 
   const resp: any = await client.getJson(url);
@@ -37,7 +37,7 @@ export class Cargo {
 see https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions',
       );
       core.error(
-        'To install it, use this action: https://github.com/actions-rs/toolchain',
+        'To install it, use this action: https://github.com/dtolnay/rust-toolchain',
       );
 
       throw error;
@@ -46,11 +46,6 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
 
   /**
    * Executes `cargo install ${program}`.
-   *
-   * TODO: Caching ability implementation is blocked,
-   * see https://github.com/actions-rs/core/issues/31
-   * As for now it acts just like an stub and simply installs the program
-   * on each call.
    *
    * `version` argument could be either actual program version or `"latest"` string,
    * which can be provided by user input.
