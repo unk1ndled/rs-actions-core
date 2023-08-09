@@ -1,7 +1,7 @@
 import * as github from '@actions/github';
 
 // `@actions/github` does not re-export `GitHub` type, thanks for nothing.
-type GitHub = any;
+type GitHub = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 interface Output {
   title: string;
@@ -18,7 +18,7 @@ export class CheckReporter {
   private checkId: undefined | number;
 
   constructor(client: GitHub, checkName: string) {
-    this.client = client;
+    this.client = client; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
     this.checkName = checkName;
     this.checkId = undefined;
   }
@@ -31,6 +31,7 @@ export class CheckReporter {
   ): Promise<number> {
     const { owner, repo } = github.context.repo;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     const response = await this.client.checks.create({
       owner: owner,
       repo: repo,
@@ -40,8 +41,8 @@ export class CheckReporter {
     });
     // TODO: Check for errors
 
-    this.checkId = response.data.id;
-    return this.checkId!;
+    this.checkId = response.data.id; // eslint-disable-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    return this.checkId!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
   }
 
   // TODO:
@@ -64,6 +65,7 @@ export class CheckReporter {
     const { owner, repo } = github.context.repo;
 
     // TODO: Check for errors
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     await this.client.checks.update({
       owner: owner,
       repo: repo,
@@ -82,6 +84,7 @@ export class CheckReporter {
     const { owner, repo } = github.context.repo;
 
     // TODO: Check for errors
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     await this.client.checks.update({
       owner: owner,
       repo: repo,

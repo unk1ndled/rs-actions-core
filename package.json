@@ -12,6 +12,7 @@
     "dist/**/*.d.ts"
   ],
   "scripts": {
+    "all": "npm run refresh && npm run lint && npm test",
     "build": "tsc -p .",
     "format": "prettier --write 'src/**/*.ts' '__tests__/**/*.ts'",
     "lint": "tsc --noEmit && eslint 'src/**/*.ts' '__tests__/**/*.ts'",

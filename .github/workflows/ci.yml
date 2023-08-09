@@ -10,7 +10,6 @@ jobs:
         node-version-file: '.nvmrc'
         cache: 'npm'
     - run: npm ci
-# TODO: Return it back later after urgent fix
-#    - run: npm run lint
+    - run: npm run lint
     - run: npm run build
     - run: npm run test

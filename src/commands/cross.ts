@@ -16,7 +16,7 @@ export class Cross {
     try {
       return await Cross.get();
     } catch (error) {
-      core.debug(`${error}`);
+      core.debug((<Error>error).message);
       return await Cross.install();
     }
   }
@@ -53,6 +53,7 @@ export class Cross {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public async call(args: string[], options?: {}): Promise<number> {
     return await exec.exec(this.path, args, options);
   }

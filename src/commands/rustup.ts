@@ -34,7 +34,9 @@ export class RustUp {
       return await RustUp.get();
     } catch (error) {
       core.debug(
-        `Unable to find "rustup" executable, installing it now. Reason: ${error}`,
+        `Unable to find "rustup" executable, installing it now. Reason: ${
+          (<Error>error).message
+        }`,
       );
       return await RustUp.install();
     }
@@ -207,6 +209,7 @@ expected at least ${PROFILES_MIN_VERSION}`);
     return await this.call(['self', 'update']);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public async call(args: string[], options?: {}): Promise<number> {
     return await exec.exec(this.path, args, options);
   }
@@ -214,6 +217,7 @@ expected at least ${PROFILES_MIN_VERSION}`);
   /**
    * Call the `rustup` and return an stdout
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   async callStdout(args: string[], options?: {}): Promise<string> {
     let stdout = '';
     const resOptions = Object.assign({}, options, {

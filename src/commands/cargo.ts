@@ -11,11 +11,13 @@ export async function resolveVersion(crate: string): Promise<string> {
     '@clechasseur/rs-actions-core (https://github.com/clechasseur/rs-actions-core)',
   );
 
-  const resp: any = await client.getJson(url);
+  const resp: any = await client.getJson(url); // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (resp.result == null) {
     throw new Error('Unable to fetch latest crate version');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   return resp.result['crate']['newest_version'];
 }
 
@@ -72,9 +74,9 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
     if (primaryKey) {
       restoreKeys = restoreKeys || [];
       const paths = [path.join(path.dirname(this.path), program)];
-      const programKey = program + '-' + version + '-' + primaryKey;
+      const programKey = `${program}-${version || ''}-${primaryKey}`;
       const programRestoreKeys = restoreKeys.map(
-        (key) => program + '-' + version + '-' + key,
+        (key) => `${program}-${version || ''}-${key}`,
       );
       const cacheKey = await cache.restoreCache(
         paths,
@@ -82,7 +84,9 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
         programRestoreKeys,
       );
       if (cacheKey) {
-        core.info(`Using cached \`${program}\` with version ${version}`);
+        core.info(
+          `Using cached \`${program}\` with version \`${version || ''}\``,
+        );
         return program;
       } else {
         const res = await this.install(program, version);
@@ -90,12 +94,12 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
           core.info(`Caching \`${program}\` with key ${programKey}`);
           await cache.saveCache(paths, programKey);
         } catch (error) {
-          if (error.name === cache.ValidationError.name) {
+          if ((<Error>error).name === cache.ValidationError.name) {
             throw error;
-          } else if (error.name === cache.ReserveCacheError.name) {
-            core.info(error.message);
+          } else if ((<Error>error).name === cache.ReserveCacheError.name) {
+            core.info((<Error>error).message);
           } else {
-            core.info('[warning]' + error.message);
+            core.info('[warning]' + (<Error>error).message);
           }
         }
         return res;
@@ -139,6 +143,7 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
     return await this.installCached(program, version);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public async call(args: string[], options?: {}): Promise<number> {
     return await exec.exec(this.path, args, options);
   }

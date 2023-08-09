@@ -49,7 +49,7 @@ function toCommandValue(input: any): string {
   return JSON.stringify(input);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export function escapeData(s: any): string {
   return toCommandValue(s)
     .replace(/%/g, '%25')
@@ -57,7 +57,7 @@ export function escapeData(s: any): string {
     .replace(/\n/g, '%0A');
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export function escapeProperty(s: any): string {
   return toCommandValue(s)
     .replace(/%/g, '%25')
