@@ -209,24 +209,30 @@ expected at least ${PROFILES_MIN_VERSION}`);
     return await this.call(['self', 'update']);
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public async call(args: string[], options?: {}): Promise<number> {
+  public async call(
+    args: string[],
+    options?: exec.ExecOptions,
+  ): Promise<number> {
     return await exec.exec(this.path, args, options);
   }
 
   /**
    * Call the `rustup` and return an stdout
    */
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  async callStdout(args: string[], options?: {}): Promise<string> {
+  async callStdout(
+    args: string[],
+    options?: exec.ExecOptions,
+  ): Promise<string> {
     let stdout = '';
-    const resOptions = Object.assign({}, options, {
-      listeners: {
-        stdout: (buffer: Buffer): void => {
-          stdout += buffer.toString();
-        },
+    const resOptions: exec.ExecOptions = {
+      ...options,
+    };
+    resOptions.listeners = {
+      ...options?.listeners,
+      stdout: (buffer: Buffer): void => {
+        stdout += buffer.toString();
       },
-    });
+    };
 
     await this.call(args, resOptions);
 

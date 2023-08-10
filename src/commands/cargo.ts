@@ -143,8 +143,10 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
     return await this.installCached(program, version);
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public async call(args: string[], options?: {}): Promise<number> {
+  public async call(
+    args: string[],
+    options?: exec.ExecOptions,
+  ): Promise<number> {
     return await exec.exec(this.path, args, options);
   }
 }
