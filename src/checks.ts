@@ -96,8 +96,7 @@ export class CheckReporter {
       output: {
         title: this.checkName,
         summary: 'Unhandled error',
-        text:
-          'Check was cancelled due to unhandled error. Check the Action logs for details.',
+        text: 'Check was cancelled due to unhandled error. Check the Action logs for details.',
       },
     });
 
