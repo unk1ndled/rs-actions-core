@@ -1,4 +1,7 @@
-on: [pull_request, push]
+name: CI
+
+on: [push]
+
 jobs:
   # The main CI workflow; installs dependencies, runs eslint, prettier, and jest.
   main:
