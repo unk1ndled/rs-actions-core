@@ -1,10 +1,10 @@
 {
   "private": false,
   "name": "@clechasseur/rs-actions-core",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "author": "clechasseur",
   "license": "MIT",
-  "description": "Core functionality for the rs-actions repos",
+  "description": "Core functionality for the rs- actions repos",
   "main": "dist/core.js",
   "files": [
     "dist/**/*.js",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
-    "@types/node": "^16.18.48",
+    "@types/node": "^20.5.9",
     "@types/semver": "^7.5.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
