@@ -35,7 +35,7 @@ export class RustUp {
     } catch (error) {
       core.debug(
         `Unable to find "rustup" executable, installing it now. Reason: ${
-          (<Error>error).message
+          (error as Error).message
         }`,
       );
       return await RustUp.install();
@@ -59,7 +59,6 @@ export class RustUp {
     switch (process.platform) {
       case 'darwin':
       case 'linux': {
-        // eslint-disable-line prettier/prettier
         const rustupSh = await tc.downloadTool('https://sh.rustup.rs');
 
         // While the `rustup-init.sh` is properly executed as is,
@@ -87,7 +86,7 @@ export class RustUp {
     }
 
     // `$HOME` should always be declared, so it is more to get the linters happy
-    core.addPath(path.join(process.env.HOME!, '.cargo', 'bin')); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    core.addPath(path.join(process.env.HOME!, '.cargo', 'bin'));
 
     // Assuming it is in the $PATH already
     return new RustUp('rustup');

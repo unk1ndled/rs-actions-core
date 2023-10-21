@@ -18,7 +18,7 @@ export async function resolveVersion(crate: string): Promise<string> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  return resp.result['crate']['newest_version'];
+  return resp.result.crate.newest_version;
 }
 
 export class Cargo {
@@ -72,11 +72,11 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
       version = await resolveVersion(program);
     }
     if (primaryKey) {
-      restoreKeys = restoreKeys || [];
+      restoreKeys = restoreKeys ?? [];
       const paths = [path.join(path.dirname(this.path), program)];
-      const programKey = `${program}-${version || ''}-${primaryKey}`;
+      const programKey = `${program}-${version ?? ''}-${primaryKey}`;
       const programRestoreKeys = restoreKeys.map(
-        (key) => `${program}-${version || ''}-${key}`,
+        (key) => `${program}-${version ?? ''}-${key}`,
       );
       const cacheKey = await cache.restoreCache(
         paths,
@@ -85,7 +85,7 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
       );
       if (cacheKey) {
         core.info(
-          `Using cached \`${program}\` with version \`${version || ''}\``,
+          `Using cached \`${program}\` with version \`${version ?? ''}\``,
         );
         return program;
       } else {
@@ -94,12 +94,12 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
           core.info(`Caching \`${program}\` with key ${programKey}`);
           await cache.saveCache(paths, programKey);
         } catch (error) {
-          if ((<Error>error).name === cache.ValidationError.name) {
+          if ((error as Error).name === cache.ValidationError.name) {
             throw error;
-          } else if ((<Error>error).name === cache.ReserveCacheError.name) {
-            core.info((<Error>error).message);
+          } else if ((error as Error).name === cache.ReserveCacheError.name) {
+            core.info((error as Error).message);
           } else {
-            core.info('[warning]' + (<Error>error).message);
+            core.info('[warning]' + (error as Error).message);
           }
         }
         return res;
@@ -118,7 +118,7 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
     args.push(program);
 
     try {
-      core.startGroup(`Installing "${program} = ${version || 'latest'}"`);
+      core.startGroup(`Installing "${program} = ${version ?? 'latest'}"`);
       await this.call(args);
     } finally {
       core.endGroup();

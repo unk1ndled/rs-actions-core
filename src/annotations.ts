@@ -22,10 +22,7 @@
 import * as os from 'os';
 
 export type AnnotationLevel = 'notice' | 'warning' | 'failure';
-interface CommandProperties {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
+type CommandProperties = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export interface Annotation {
   path: string;
@@ -49,7 +46,7 @@ function toCommandValue(input: any): string {
   return JSON.stringify(input);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function escapeData(s: any): string {
   return toCommandValue(s)
     .replace(/%/g, '%25')
@@ -57,7 +54,7 @@ export function escapeData(s: any): string {
     .replace(/\n/g, '%0A');
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function escapeProperty(s: any): string {
   return toCommandValue(s)
     .replace(/%/g, '%25')

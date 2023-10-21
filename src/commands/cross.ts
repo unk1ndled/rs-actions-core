@@ -16,7 +16,7 @@ export class Cross {
     try {
       return await Cross.get();
     } catch (error) {
-      core.debug((<Error>error).message);
+      core.debug((error as Error).message);
       return await Cross.install();
     }
   }

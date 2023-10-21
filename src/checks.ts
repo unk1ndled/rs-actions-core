@@ -36,13 +36,13 @@ export class CheckReporter {
       owner: owner,
       repo: repo,
       name: this.checkName,
-      head_sha: github.context.sha, // eslint-disable-line
+      head_sha: github.context.sha,
       status: status ? status : 'in_progress',
     });
     // TODO: Check for errors
 
     this.checkId = response.data.id; // eslint-disable-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    return this.checkId!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    return this.checkId!;
   }
 
   // TODO:
@@ -70,10 +70,10 @@ export class CheckReporter {
       owner: owner,
       repo: repo,
       name: this.checkName,
-      check_run_id: this.checkId!, // eslint-disable-line
+      check_run_id: this.checkId!,
       status: 'completed',
       conclusion: conclusion,
-      completed_at: new Date().toISOString(), // eslint-disable-line
+      completed_at: new Date().toISOString(),
       output: output,
     });
 
@@ -89,10 +89,10 @@ export class CheckReporter {
       owner: owner,
       repo: repo,
       name: this.checkName,
-      check_run_id: this.checkId!, // eslint-disable-line
+      check_run_id: this.checkId!,
       status: 'completed',
       conclusion: 'cancelled',
-      completed_at: new Date().toISOString(), // eslint-disable-line
+      completed_at: new Date().toISOString(),
       output: {
         title: this.checkName,
         summary: 'Unhandled error',
