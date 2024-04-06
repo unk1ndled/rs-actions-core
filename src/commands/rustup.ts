@@ -121,12 +121,14 @@ export class RustUp {
 
     await this.call(args);
 
-    if (options && options.default) {
-      await this.call(['default', name]);
-    }
+    if (options) {
+      if (options.default) {
+        await this.call(['default', name]);
+      }
 
-    if (options && options.override) {
-      await this.call(['override', 'set', name]);
+      if (options.override) {
+        await this.call(['override', 'set', name]);
+      }
     }
 
     // TODO: Is there smth like Rust' `return Ok(())`?
