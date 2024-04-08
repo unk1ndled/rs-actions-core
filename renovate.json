@@ -4,5 +4,11 @@
     "config:recommended",
     "helpers:pinGitHubActionDigests",
     ":disableRateLimiting"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "rangeStrategy": "bump"
+    }
   ]
 }
