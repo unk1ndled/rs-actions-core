@@ -136,7 +136,7 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
   ): Promise<string> {
     try {
       return await io.which(program, true);
-    } catch (error) {
+    } catch {
       core.info(`${program} is not installed, installing it now`);
     }
 
