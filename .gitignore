@@ -91,5 +91,8 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
+# IDEs
+.idea/
+
 # For macOS
 .DS_Store
