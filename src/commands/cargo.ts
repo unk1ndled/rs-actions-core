@@ -52,9 +52,8 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
    * `version` argument could be either actual program version or `"latest"` string,
    * which can be provided by user input.
    *
-   * If `version` is `undefined` or `"latest"`, this method could call the Crates.io API,
-   * fetch the latest version and search for it in cache.
-   * TODO: Actually implement this.
+   * If `version` is `undefined` or `"latest"`, this method calls the Crates.io API,
+   * fetches the latest version and searches for it in cache.
    *
    * ## Returns
    *
