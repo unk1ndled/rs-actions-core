@@ -5,6 +5,8 @@ import { CargoHack } from '../../src/commands/cargoHack';
 const SECONDS = 1000;
 
 describe('CargoHack', () => {
+  const primaryKey = process.env.CI ? undefined : 'no-cache';
+
   describe('install', () => {
     it(
       'installs cargo-hack',
@@ -16,7 +18,7 @@ describe('CargoHack', () => {
           console.log('cargo-hack already installed; skipping this test');
         } catch {
           // cargo-hack is not installed; install it
-          const cargoHack = await CargoHack.install();
+          const cargoHack = await CargoHack.install('latest', primaryKey);
           const exitCode = await cargoHack.call(['--version']);
           expect(exitCode).toBe(0);
         }
@@ -49,7 +51,7 @@ describe('CargoHack', () => {
     it(
       'installs cargo-hack if needed, otherwise reuses it',
       async () => {
-        const cargoHack = await CargoHack.getOrInstall();
+        const cargoHack = await CargoHack.getOrInstall(primaryKey);
         const exitCode = await cargoHack.call(['--version']);
         expect(exitCode).toBe(0);
       },

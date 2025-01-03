@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@clechasseur/rs-actions-core",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "author": "clechasseur",
   "license": "MIT",
   "description": "Core functionality for the rs-* actions repos",

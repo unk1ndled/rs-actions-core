@@ -13,7 +13,7 @@ export async function resolveVersion(crate: string): Promise<string> {
 
   const resp: any = await client.getJson(url); // eslint-disable-line @typescript-eslint/no-explicit-any
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (resp.result == null) {
+  if (!resp.result) {
     throw new Error('Unable to fetch latest crate version');
   }
 
@@ -28,6 +28,9 @@ export class Cargo {
     this.path = path;
   }
 
+  /**
+   * Fetches the currently-installed version of cargo.
+   */
   public static async get(): Promise<Cargo> {
     try {
       const path = await io.which('cargo', true);
@@ -39,7 +42,7 @@ export class Cargo {
 see https://help.github.com/en/articles/software-in-virtual-environments-for-github-actions',
       );
       core.error(
-        'To install it, use this action: https://github.com/dtolnay/rust-toolchain',
+        'To install it, use an action such as: https://github.com/actions-rust-lang/setup-rust-toolchain',
       );
 
       throw error;
@@ -47,13 +50,15 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
   }
 
   /**
-   * Executes `cargo install ${program}`.
+   * Looks for a cached version of `program`. If none is found,
+   * executes `cargo install ${program}` and caches the result.
+   * Caching can be disabled by passing `no-cache` as primary key.
    *
    * `version` argument could be either actual program version or `"latest"` string,
    * which can be provided by user input.
    *
-   * If `version` is `undefined` or `"latest"`, this method calls the Crates.io API,
-   * fetches the latest version and searches for it in cache.
+   * If `version` is `undefined` or `'latest'`, this method calls the Crates.io API
+   * and fetches the latest version.
    *
    * ## Returns
    *
@@ -61,91 +66,81 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
    * As the $PATH should be already tuned properly at this point,
    * returned value at the moment is simply equal to the `program` argument.
    */
-  public async installCached(
+  public async install(
     program: string,
     version?: string,
     primaryKey?: string,
     restoreKeys?: string[],
   ): Promise<string> {
-    if (version == 'latest') {
-      version = await resolveVersion(program);
+    if (!version || version === 'latest') {
+      version = (await resolveVersion(program)) ?? '';
     }
-    if (primaryKey) {
-      restoreKeys = restoreKeys ?? [];
-      const paths = [path.join(path.dirname(this.path), program)];
-      const programKey = `${program}-${version ?? ''}-${primaryKey}`;
-      const programRestoreKeys = restoreKeys.map(
-        (key) => `${program}-${version ?? ''}-${key}`,
-      );
+    primaryKey ??= `rs-actions-core-${program}`;
+    restoreKeys ??= [];
+
+    const paths = [path.join(path.dirname(this.path), program)];
+    const programKey = `${program}-${version}-${primaryKey}`;
+    const programRestoreKeys = restoreKeys.map(
+      (key) => `${program}-${version}-${key}`,
+    );
+
+    if (primaryKey !== 'no-cache') {
       const cacheKey = await cache.restoreCache(
         paths,
         programKey,
         programRestoreKeys,
       );
       if (cacheKey) {
-        core.info(
-          `Using cached \`${program}\` with version \`${version ?? ''}\``,
-        );
+        core.info(`Using cached \`${program}\` with version \`${version}\``);
         return program;
-      } else {
-        const res = await this.install(program, version);
-        try {
-          core.info(`Caching \`${program}\` with key ${programKey}`);
-          await cache.saveCache(paths, programKey);
-        } catch (error) {
-          if ((error as Error).name === cache.ValidationError.name) {
-            throw error;
-          } else if ((error as Error).name === cache.ReserveCacheError.name) {
-            core.info((error as Error).message);
-          } else {
-            core.info('[warning]' + (error as Error).message);
-          }
-        }
-        return res;
       }
-    } else {
-      return await this.install(program, version);
     }
+
+    const installPath = await this.cargoInstall(program, version);
+    try {
+      core.info(`Caching \`${program}\` with key \`${programKey}\``);
+      await cache.saveCache(paths, programKey);
+    } catch (error) {
+      if ((error as Error).name === cache.ValidationError.name) {
+        throw error;
+      } else if ((error as Error).name === cache.ReserveCacheError.name) {
+        core.info((error as Error).message);
+      } else {
+        core.info(`[warning] ${(error as Error).message}`);
+      }
+    }
+
+    return installPath;
   }
 
-  async install(program: string, version?: string): Promise<string> {
+  /**
+   * Runs a cargo command.
+   */
+  public async call(
+    args: string[],
+    options?: exec.ExecOptions,
+  ): Promise<number> {
+    return await exec.exec(this.path, args, options);
+  }
+
+  private async cargoInstall(
+    program: string,
+    version: string,
+  ): Promise<string> {
     const args = ['install'];
-    if (version && version != 'latest') {
+    if (version !== 'latest') {
       args.push('--version');
       args.push(version);
     }
     args.push(program);
 
     try {
-      core.startGroup(`Installing "${program} = ${version ?? 'latest'}"`);
+      core.startGroup(`Installing "${program} = ${version}"`);
       await this.call(args);
     } finally {
       core.endGroup();
     }
 
     return program;
-  }
-
-  /**
-   * Find the cargo sub-command or install it
-   */
-  public async findOrInstall(
-    program: string,
-    version?: string,
-  ): Promise<string> {
-    try {
-      return await io.which(program, true);
-    } catch {
-      core.info(`${program} is not installed, installing it now`);
-    }
-
-    return await this.installCached(program, version);
-  }
-
-  public async call(
-    args: string[],
-    options?: exec.ExecOptions,
-  ): Promise<number> {
-    return await exec.exec(this.path, args, options);
   }
 }
