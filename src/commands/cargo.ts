@@ -75,12 +75,11 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
     if (!version || version === 'latest') {
       version = (await resolveVersion(program)) ?? '';
     }
-    primaryKey ??= `rs-actions-core-${program}`;
-    restoreKeys ??= [];
+    primaryKey ??= 'rs-actions-core';
 
     const paths = [path.join(path.dirname(this.path), program)];
     const programKey = `${program}-${version}-${primaryKey}`;
-    const programRestoreKeys = restoreKeys.map(
+    const programRestoreKeys = (restoreKeys ?? []).map(
       (key) => `${program}-${version}-${key}`,
     );
 
