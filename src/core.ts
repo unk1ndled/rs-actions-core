@@ -1,5 +1,6 @@
 export * from './commands/cargo';
 export * from './commands/cross';
+export * from './commands/cargoHack';
 export * from './commands/rustup';
 
 import * as input from './input';
