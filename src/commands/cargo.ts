@@ -5,6 +5,27 @@ import * as cache from '@actions/cache';
 import * as http from '@actions/http-client';
 import * as path from 'path';
 
+/**
+ * Computes the argument to pass to cargo to specify a toolchain.
+ *
+ * @param toolchain Toolchain to use, or `undefined` to use the default toolchain.
+ * @returns Cargo toolchain argument. Either an empty string if the default
+ *          toolchain must be used, or a toolchain identifier prepended with `+`.
+ */
+export function cargoToolchainArg(toolchain?: string): string {
+  if (!toolchain) {
+    return '';
+  }
+
+  return toolchain.startsWith('+') ? toolchain : `+${toolchain}`;
+}
+
+/**
+ * Resolves the latest version of a Cargo crate by contacting crates.io.
+ *
+ * @param crate Crate name.
+ * @returns Latest crate version.
+ */
 export async function resolveVersion(crate: string): Promise<string> {
   const url = `https://crates.io/api/v1/crates/${crate}`;
   const client = new http.HttpClient(
@@ -23,19 +44,23 @@ export async function resolveVersion(crate: string): Promise<string> {
 
 export class Cargo {
   private readonly path: string;
+  private readonly toolchain: string;
 
-  private constructor(path: string) {
+  private constructor(path: string, toolchain?: string) {
     this.path = path;
+    this.toolchain = cargoToolchainArg(toolchain);
   }
 
   /**
    * Fetches the currently-installed version of cargo.
+   *
+   * @param toolchain Optional toolchain to use when executing cargo commands.
    */
-  public static async get(): Promise<Cargo> {
+  public static async get(toolchain?: string): Promise<Cargo> {
     try {
       const path = await io.which('cargo', true);
 
-      return new Cargo(path);
+      return new Cargo(path, toolchain);
     } catch (error) {
       core.error(
         'cargo is not installed by default for some virtual environments, \
@@ -52,19 +77,18 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
   /**
    * Looks for a cached version of `program`. If none is found,
    * executes `cargo install ${program}` and caches the result.
-   * Caching can be disabled by passing `no-cache` as primary key.
    *
-   * `version` argument could be either actual program version or `"latest"` string,
-   * which can be provided by user input.
-   *
-   * If `version` is `undefined` or `'latest'`, this method calls the Crates.io API
-   * and fetches the latest version.
-   *
-   * ## Returns
-   *
-   * Path to the installed program.
-   * As the $PATH should be already tuned properly at this point,
-   * returned value at the moment is simply equal to the `program` argument.
+   * @param program Program to install.
+   * @param version Program version to install. If `undefined` or set to `'latest'`,
+   *                the latest version will be installed.
+   * @param primaryKey Primary cache key to use when caching program. If not
+   *                   specified, a default cache key will be used. If set to
+   *                   `no-cache`, caching is disabled.
+   * @param restoreKeys Optional additional cache keys to use when looking for
+   *                    a cached version of the program.
+   * @returns Path to installed program. Since program will be installed in
+   *          the cargo bin directory which is on the `PATH`, this will be
+   *          equal to `program` currently.
    */
   public async install(
     program: string,
@@ -96,16 +120,19 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
     }
 
     const installPath = await this.cargoInstall(program, version);
-    try {
-      core.info(`Caching \`${program}\` with key \`${programKey}\``);
-      await cache.saveCache(paths, programKey);
-    } catch (error) {
-      if ((error as Error).name === cache.ValidationError.name) {
-        throw error;
-      } else if ((error as Error).name === cache.ReserveCacheError.name) {
-        core.info((error as Error).message);
-      } else {
-        core.info(`[warning] ${(error as Error).message}`);
+
+    if (primaryKey !== 'no-cache') {
+      try {
+        core.info(`Caching \`${program}\` with key \`${programKey}\``);
+        await cache.saveCache(paths, programKey);
+      } catch (error) {
+        if ((error as Error).name === cache.ValidationError.name) {
+          throw error;
+        } else if ((error as Error).name === cache.ReserveCacheError.name) {
+          core.info((error as Error).message);
+        } else {
+          core.info(`[warning] ${(error as Error).message}`);
+        }
       }
     }
 
@@ -114,12 +141,20 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
 
   /**
    * Runs a cargo command.
+   *
+   * @param args Arguments to pass to cargo.
+   * @param options Optional exec options.
+   * @returns Cargo exit code.
    */
   public async call(
     args: string[],
     options?: exec.ExecOptions,
   ): Promise<number> {
-    return await exec.exec(this.path, args, options);
+    return await exec.exec(this.path, this.callArgs(args), options);
+  }
+
+  private callArgs(args: string[]): string[] {
+    return this.toolchain ? [this.toolchain, ...args] : args;
   }
 
   private async cargoInstall(
