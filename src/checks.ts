@@ -37,7 +37,7 @@ export class CheckReporter {
       repo: repo,
       name: this.checkName,
       head_sha: github.context.sha,
-      status: status ? status : 'in_progress',
+      status: status ?? 'in_progress',
     });
     // TODO: Check for errors
 
