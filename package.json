@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@clechasseur/rs-actions-core",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "author": "clechasseur",
   "license": "MIT",
   "description": "Core functionality for the rs-* actions repos",
@@ -28,7 +28,7 @@
     "url": "https://github.com/clechasseur/rs-actions-core/issues"
   },
   "dependencies": {
-    "@actions/cache": "^4.0.0",
+    "@actions/cache": "^4.0.1",
     "@actions/core": "^1.11.1",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^6.0.0",
