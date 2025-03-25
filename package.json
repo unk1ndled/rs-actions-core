@@ -1,6 +1,6 @@
 {
   "name": "@unk1ndled/rs-actions-core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This repository contains code that are common to many Rust GitHub actions.",
   "main": "dist/core.js",
   "files": [
