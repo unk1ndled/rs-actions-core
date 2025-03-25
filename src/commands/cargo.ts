@@ -29,7 +29,7 @@ export function cargoToolchainArg(toolchain?: string): string {
 export async function resolveVersion(crate: string): Promise<string> {
   const url = `https://crates.io/api/v1/crates/${crate}`;
   const client = new http.HttpClient(
-    '@clechasseur/rs-actions-core (https://github.com/clechasseur/rs-actions-core)',
+    '@unk1ndled/rs-actions-core (https://github.com/unk1ndled/rs-actions-core)',
   );
 
   const resp: any = await client.getJson(url); // eslint-disable-line @typescript-eslint/no-explicit-any
